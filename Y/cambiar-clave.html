@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Clave Principal</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-group .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        .input-group .toggle-password img {
+            width: 20px;
+            height: 20px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cambiar Clave Principal</h2>
+        <div class="input-group">
+            <input type="password" id="new-password" placeholder="Nueva Clave">
+            <span class="toggle-password">
+                <img src="https://cdn-icons-png.flaticon.com/512/6996/6996420.png" alt="Mostrar">
+            </span>
+        </div>
+        <button>Cambiar Clave</button>
+        <p id="message" style="color: red; display: none;">Error al cambiar la clave</p>
+    </div>
+    <script type="module" src="cambiar-clave.js"></script>
+    <script>
+      // Bloquear clic derecho
+      document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+      });
+    
+      // Detectar teclas comunes para abrir DevTools
+      document.addEventListener('keydown', function (e) {
+        // F12
+        if (e.key === 'F12') {
+          e.preventDefault();
+        }
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+        if ((e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key)) ||
+            (e.ctrlKey && ['U', 'S'].includes(e.key))) {
+          e.preventDefault();
+        }
+      });
+    
+      // Detectar si DevTools está abierto (básico)
+      setInterval(function () {
+        const before = new Date().getTime();
+        debugger;
+        const after = new Date().getTime();
+        if (after - before > 100) {
+          alert('Por favor, no intentes inspeccionar el sitio.');
+          window.location.href = 'about:blank';
+        }
+      }, 2000);
+    </script>
+    
+</body>
+</html>

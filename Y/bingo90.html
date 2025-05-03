@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartones de Usuario - Bingo 90</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1b1b1b;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .logo-container {
+            margin-bottom: 20px;
+        }
+        #logo {
+            width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .user-name {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .cartones {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .carton {
+            border: 2px solid #fff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .carton img {
+            max-width: 100%;
+            height: auto;
+        }
+        .whatsapp-link {
+            margin-top: 20px;
+        }
+        .whatsapp-link img {
+            width: 50px;
+            height: 50px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: transparent;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .icon-container {
+            flex: 1 1 45%;
+            margin: 10px;
+            max-width: 150px;
+        }
+        .icon-container a {
+            text-decoration: none;
+        }
+        .icon {
+            width: 100%;
+            height: auto;
+        }
+        @media (max-width: 600px) {
+            .icon-container {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="logo-container">
+        <img id="logo" src="images/logo.png" alt="Bingo Yang Casino Logo" />
+    </div>
+    <h1>BINGO YANG CASINO🎱</h1>
+    <div class="container">
+        <div class="user-name" id="user-name"></div>
+        <p>Aquí abajo está tu cartón:</p>
+        <div class="cartones" id="cartones"></div>
+        <div class="whatsapp-link">
+            <a href="https://chat.whatsapp.com/DGSWs5emcuGDgRTPETIAoY" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2048px-WhatsApp.svg.png" alt="WhatsApp">
+            </a>
+            <p>Grupo de WhatsApp, haz clic en el ícono</p>
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9jE8fu9UPZI-7UBx_Gy00cqYgmuY-ASs",
+            authDomain: "bingo-yangg.firebaseapp.com",
+            databaseURL: "https://bingo-yangg-default-rtdb.firebaseio.com",
+            projectId: "bingo-yangg",
+            storageBucket: "bingo-yangg.appspot.com",
+            messagingSenderId: "978098281950",
+            appId: "1:978098281950:web:3ec7eab66e2e486012114f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = getParameterByName('username');
+            const usersRef = database.ref('users/bingo-90');
+
+            if (username) {
+                usersRef.orderByChild('name').equalTo(username).once('value')
+                    .then(function(snapshot) {
+                        let user = null;
+                        snapshot.forEach(function(childSnapshot) {
+                            user = childSnapshot.val();
+                        });
+
+                        if (user) {
+                            document.getElementById('user-name').innerText = `Bienvenido, ${user.name}`;
+                            const cartonNumbers = user.cartonNumbers.split(',').map(num => num.trim());
+                            const cartonesContainer = document.getElementById('cartones');
+
+                            cartonNumbers.forEach(num => {
+                                const cartonDiv = document.createElement('div');
+                                cartonDiv.classList.add('carton');
+                                const img = document.createElement('img');
+                                img.src = `images/${num.padStart(6, '0')}.JPG`;
+                                img.alt = `Cartón ${num}`;
+                                cartonDiv.appendChild(img);
+                                cartonesContainer.appendChild(cartonDiv);
+                            });
+                        } else {
+                            document.getElementById('user-name').innerText = 'Usuario no encontrado';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error("Error al buscar el usuario en Firebase:", error);
+                    });
+            } else {
+                document.getElementById('user-name').innerText = 'Nombre de usuario no proporcionado';
+            }
+        });
+    </script>
+<script>
+    // Bloquear clic derecho
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  
+    // Detectar teclas comunes para abrir DevTools
+    document.addEventListener('keydown', function (e) {
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+      }
+      // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+      if ((e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key)) ||
+          (e.ctrlKey && ['U', 'S'].includes(e.key))) {
+        e.preventDefault();
+      }
+    });
+  
+    // Detectar si DevTools está abierto (básico)
+    setInterval(function () {
+      const before = new Date().getTime();
+      debugger;
+      const after = new Date().getTime();
+      if (after - before > 100) {
+        alert('Por favor, no intentes inspeccionar el sitio.');
+        window.location.href = 'about:blank';
+      }
+    }, 2000);
+  </script>
+  
+  
+</body>
+</html>

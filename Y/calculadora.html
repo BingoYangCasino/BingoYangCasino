@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculador de Ganancias de Bingo</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .logo-space {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    .logo-space img {
+      width: 80px;
+      height: auto;
+      border-radius: 5px;
+    }
+    .container {
+      background-color: #282c34;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      width: 90%;
+      max-width: 400px;
+      margin-top: 15px;
+    }
+    .title {
+      text-align: center;
+      color: #61dafb;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    .label {
+      display: block;
+      margin-bottom: 3px;
+      color: #9cdcfe;
+      font-size: 0.9em;
+    }
+    .range-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .range-value {
+      display: block;
+      text-align: center;
+      color: #61dafb;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .input-field {
+      width: 90%;
+      padding: 8px;
+      margin-bottom: 5px;
+      border: 1px solid #61dafb;
+      border-radius: 5px;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-size: 0.9em;
+    }
+    .btn-add, .btn-calculate, .btn-reset, .btn-save {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .btn-add { background-color: #28a745; color: white; }
+    .btn-calculate { background-color: #007bff; color: white; }
+    .btn-reset { background-color: #dc3545; color: white; }
+    .btn-save { background-color: #ffc107; color: black; }
+    .btn-add:hover, .btn-calculate:hover, .btn-reset:hover, .btn-save:hover {
+      opacity: 0.9;
+    }
+    .results {
+      margin-top: 15px;
+    }
+    .results-title, .premios-title, .ganancias-title {
+      color: #e91e63;
+      font-size: 1em;
+    }
+    .ganancia-item {
+      margin: 5px 0;
+      font-size: 0.9em;
+    }
+    footer {
+      font-size: 0.75em;
+      text-align: center;
+      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      footer { font-size: 0.6em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-space">
+    <img src="images/logo.png" alt="Bingo Yang Casino Logo" />
+  </div>
+  <div id="root" class="container"></div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+    import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9jE8fu9UPZI-7UBx_Gy00cqYgmuY-ASs",
+      authDomain: "bingo-yangg.firebaseapp.com",
+      databaseURL: "https://bingo-yangg-default-rtdb.firebaseio.com",
+      projectId: "bingo-yangg",
+      storageBucket: "bingo-yangg.appspot.com",
+      messagingSenderId: "978098281950",
+      appId: "1:978098281950:web:3ec7eab66e2e486012114f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.saveToFirebase = (data) => {
+      const timestamp = new Date().toISOString();
+      set(ref(database, 'bingo/' + timestamp), data);
+    };
+
+    window.loadFromFirebase = (callback) => {
+      const dataRef = ref(database, 'bingo');
+      onValue(dataRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const latestData = Object.values(data).pop();
+          callback(latestData);
+        }
+      });
+    };
+  </script>
+
+  <script src="https://unpkg.com/react@17/umd/react.production.min.js" defer></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" defer></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const BingoGananciasCalculator = () => {
+      const [precioCarton, setPrecioCarton] = useState(60);
+      const [vendedores, setVendedores] = useState([{ nombre: '', cantidad: undefined }]);
+      const [totalVentas, setTotalVentas] = useState(0);
+      const [pagoPagina, setPagoPagina] = useState(0);
+      const [pote, setPote] = useState(0);
+      const [disponibleParaPagos, setDisponibleParaPagos] = useState(0);
+      const [premios, setPremios] = useState({ p1: undefined, p2: undefined, p3: undefined, p4: undefined });
+      const [totalPremios, setTotalPremios] = useState(0);
+      const [gananciasVendedores, setGananciasVendedores] = useState({});
+
+      useEffect(() => {
+        if (typeof window.loadFromFirebase === 'function') {
+          window.loadFromFirebase((data) => {
+            if (data) {
+              setPrecioCarton(data.precioCarton || 60);
+              setVendedores(data.vendedores || [{ nombre: '', cantidad: undefined }]);
+              setPremios(data.premios || { p1: undefined, p2: undefined, p3: undefined, p4: undefined });
+              calcularGanancias(data);
+            }
+          });
+        }
+      }, []);
+
+      const calcularGanancias = (data) => {
+        const vendedoresData = data ? data.vendedores : vendedores;
+        const totalCartonesVendidos = vendedoresData.reduce((sum, vendedor) => sum + (vendedor.cantidad || 0), 0);
+        const totalVentasCalculado = precioCarton * totalCartonesVendidos;
+        setTotalVentas(totalVentasCalculado);
+
+        const pagoPaginaCalculado = totalVentasCalculado * 0.18;
+        setPagoPagina(pagoPaginaCalculado);
+
+        const poteCalculado = totalVentasCalculado * 0.05;
+        setPote(poteCalculado);
+
+        const disponibleParaPagosCalculado = totalVentasCalculado - pagoPaginaCalculado - poteCalculado;
+        setDisponibleParaPagos(disponibleParaPagosCalculado);
+      };
+
+      const calcularPagos = () => {
+        const totalPremiosCalculado = Object.values(premios).reduce((sum, premio) => sum + (premio || 0), 0);
+        setTotalPremios(totalPremiosCalculado);
+
+        const disponibleActualizado = disponibleParaPagos - totalPremiosCalculado;
+        setDisponibleParaPagos(disponibleActualizado);
+
+        const gananciasPorVendedor = {};
+        const totalCartonesVendidos = vendedores.reduce((sum, vendedor) => sum + (vendedor.cantidad || 0), 0);
+
+        vendedores.forEach((vendedor) => {
+          const porcentaje = (vendedor.cantidad || 0) / totalCartonesVendidos;
+          gananciasPorVendedor[vendedor.nombre] = Math.floor(disponibleActualizado * porcentaje);
+        });
+
+        const totalGanancias = Object.values(gananciasPorVendedor).reduce((sum, g) => sum + g, 0);
+        const diferencia = disponibleActualizado - totalGanancias;
+        const primerVendedor = Object.keys(gananciasPorVendedor)[0];
+        if (primerVendedor && diferencia !== 0) {
+          gananciasPorVendedor[primerVendedor] += diferencia;
+        }
+
+        setGananciasVendedores(gananciasPorVendedor);
+      };
+
+      const guardarFirebase = () => {
+        if (typeof window.saveToFirebase === 'function') {
+          window.saveToFirebase({ precioCarton, vendedores, premios, totalVentas, pagoPagina, pote, disponibleParaPagos, gananciasVendedores });
+          alert("Datos guardados en Firebase.");
+        }
+      };
+
+      const reiniciarDatos = () => {
+        setPrecioCarton(60);
+        setVendedores([{ nombre: '', cantidad: undefined }]);
+        setTotalVentas(0);
+        setPagoPagina(0);
+        setPote(0);
+        setDisponibleParaPagos(0);
+        setPremios({ p1: undefined, p2: undefined, p3: undefined, p4: undefined });
+        setTotalPremios(0);
+        setGananciasVendedores({});
+        guardarFirebase();
+      };
+
+      const formatNumber = (val) => {
+        return val.toString().split('.')[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      };
+
+      return (
+        <div className="calculator-container">
+          <h1 className="title">Calculador de Ganancias de Bingo Yang Casino</h1>
+          <div className="input-group">
+            <label className="label">Precio del Cartón (BS):</label>
+            <input type="range" min="60" max="200" step="10" value={precioCarton} onChange={(e) => setPrecioCarton(Number(e.target.value))} className="range-input" />
+            <span className="range-value">{precioCarton} BS</span>
+          </div>
+          <div className="input-group">
+            <label className="label">Vendedores:</label>
+            {vendedores.map((v, i) => (
+              <div key={i} className="vendedor-input">
+                <input type="text" value={v.nombre} onChange={(e) => {
+                  const nv = [...vendedores];
+                  nv[i].nombre = e.target.value;
+                  setVendedores(nv);
+                }} className="input-field" placeholder="Nombre del Vendedor" />
+                <input type="number" value={v.cantidad} onChange={(e) => {
+                  const nv = [...vendedores];
+                  nv[i].cantidad = Number(e.target.value);
+                  setVendedores(nv);
+                }} className="input-field" placeholder="Cantidad Vendida" />
+              </div>
+            ))}
+            <button onClick={() => setVendedores([...vendedores, { nombre: '', cantidad: undefined }])} className="btn-add">Agregar Vendedor</button>
+          </div>
+          <button onClick={() => calcularGanancias()} className="btn-calculate">Calcular Ganancias</button>
+          {totalVentas > 0 && (
+            <div className="results">
+              <h2 className="results-title">Resultados:</h2>
+              <p>Total Ventas: {formatNumber(totalVentas)} BS</p>
+              <p>Pago Página: {formatNumber(pagoPagina)} BS</p>
+              <p>Pote: {formatNumber(pote)} BS</p>
+              <p>Disponible: {formatNumber(disponibleParaPagos)} BS</p>
+              <h3 className="premios-title">Premios:</h3>
+              {Object.keys(premios).map((key) => (
+                <div key={key}>
+                  <label className="label">Premio {key}:</label>
+                  <input type="number" className="input-field" placeholder={`Premio ${key}`} value={premios[key]} onChange={(e) => setPremios({ ...premios, [key]: Number(e.target.value) })} />
+                </div>
+              ))}
+              <button onClick={calcularPagos} className="btn-calculate">Calcular Pagos</button>
+              {totalPremios > 0 && (
+                <>
+                  <p>Total Premios: {formatNumber(totalPremios)} BS</p>
+                  <p>Disponible Actualizado: {formatNumber(disponibleParaPagos)} BS</p>
+                  <h3 className="ganancias-title">Ganancias por Vendedor:</h3>
+                  {Object.entries(gananciasVendedores).map(([k, v]) => (
+                    <p key={k} className="ganancia-item">{k}: {formatNumber(v)} BS</p>
+                  ))}
+                  <button onClick={guardarFirebase} className="btn-save">Guardar en Firebase</button>
+                </>
+              )}
+            </div>
+          )}
+          <button onClick={reiniciarDatos} className="btn-reset">Eliminar Datos</button>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<BingoGananciasCalculator />, document.getElementById('root'));
+  </script>
+
+  <footer>
+    <p>&copy; Empresa Yang Diversión Casino, Extensión Bingo Yang Casino. Todos los derechos reservados.</p>
+    <p>PROHIBIDO MENORES DE 🔞</p>
+  </footer>
+  <script>
+    // Bloquear clic derecho
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  
+    // Detectar teclas comunes para abrir DevTools
+    document.addEventListener('keydown', function (e) {
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+      }
+      // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+      if ((e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key)) ||
+          (e.ctrlKey && ['U', 'S'].includes(e.key))) {
+        e.preventDefault();
+      }
+    });
+  
+    // Detectar si DevTools está abierto (básico)
+    setInterval(function () {
+      const before = new Date().getTime();
+      debugger;
+      const after = new Date().getTime();
+      if (after - before > 100) {
+        alert('Por favor, no intentes inspeccionar el sitio.');
+        window.location.href = 'about:blank';
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

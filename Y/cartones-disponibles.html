@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Bingo</title>
+    <style>
+        /* Estilo global */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1b1b1b; /* Fondo gris oscuro */
+            background-image: radial-gradient(black 1px, transparent 1px); /* Patrón de puntos negros */
+            background-size: 4px 4px; /* Tamaño de los puntos */
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        th, td {
+            border: 1px solid #ffffffd3;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #cc00ff;
+        }
+
+        .bingo-table {
+            margin-bottom: 20px;
+        }
+
+        /* Estilo para los cuadritos de los números */
+        .bingo-table td {
+            background-color: rgba(81, 205, 81, 0.789); /* Fondo verde transparente */
+            color: white; /* Color del texto en blanco */
+            cursor: pointer; /* Cambiar el cursor al pasar sobre la celda */
+        }
+
+        .marked {
+            background-color: rgba(218, 18, 18, 0.342); /* Fondo rojo para los números marcados */
+            color: white; /* Color del texto en blanco */
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 4px;
+                font-size: 10px;
+            }
+            table {
+                font-size: 10px;
+                width: 100%;
+            }
+            .bingo-table {
+                overflow-x: auto;
+                display: block;
+                width: 100%;
+                max-width: 300px; /* Ajusta el ancho máximo para móviles */
+                margin: 0 auto; /* Centra la tabla */
+                padding: 0 20px; /* Añade un padding para centrar más */
+            }
+            .bingo-table th, .bingo-table td {
+                width: 10%;
+                word-wrap: break-word;
+            }
+        }
+
+        /* Estilo para el cuadro de diálogo */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: #333;
+            margin: 20% auto;
+            padding: 10px;
+            border: 2px solid #bb00ff;
+            width: 80%;
+            max-width: 200px;
+            color: white;
+            font-size: 12px; /* Tamaño más pequeño para el aviso */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .close {
+            color: #cc00ff;
+            float: right;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #b700ff;
+            border-radius: 5px;
+            background-color: #444;
+            color: white;
+            font-size: 12px;
+        }
+
+        .modal button {
+            background-color: #5b5a5c;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 5px;
+            margin-top: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 12px;
+        }
+
+        .modal button:hover {
+            background-color: #e95d6667;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reset-button {
+            background-color: #cc00ff;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .reset-button:hover {
+            background-color: #e95d6667;
+        }
+
+        /* Estilos para el footer */
+        footer {
+            font-size: 0.75em; /* Tamaño de fuente más pequeño para PC */
+        }
+
+        /* Estilos para el footer en modo móvil */
+        @media (max-width: 768px) {
+            footer {
+                font-size: 0.6em; /* Tamaño de fuente aún más pequeño para móvil */
+            }
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: transparent; /* Elimina el fondo gris */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .icon-container {
+            flex: 1 1 45%; /* Ajusta el ancho para que dos iconos quepan en una fila */
+            margin: 10px; /* Espacio entre los iconos */
+            max-width: 150px; /* Ajusta el tamaño máximo según tus necesidades */
+        }
+        .icon-container a {
+            text-decoration: none;
+        }
+        .icon {
+            width: 100%; /* Ajusta el tamaño según tus necesidades */
+            height: auto;
+        }
+        @media (max-width: 600px) {
+            .icon-container {
+                flex: 1 1 100%; /* Ajusta el ancho para que los iconos se apilen en dispositivos móviles */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Cartones Disponibles Bingo 75🎱</h2>
+    <div id="bingo-75-count"></div>
+    <table class="bingo-table" id="bingo-table-75">
+        <thead>
+            <tr>
+                <th>B</th>
+                <th>I</th>
+                <th>N</th>
+                <th>G</th>
+                <th>O</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>001</td><td>002</td><td>003</td><td>004</td><td>005</td></tr>
+            <tr><td>006</td><td>007</td><td>008</td><td>009</td><td>010</td></tr>
+            <tr><td>011</td><td>012</td><td>013</td><td>014</td><td>015</td></tr>
+            <tr><td>016</td><td>017</td><td>018</td><td>019</td><td>020</td></tr>
+            <tr><td>021</td><td>022</td><td>023</td><td>024</td><td>025</td></tr>
+            <tr><td>026</td><td>027</td><td>028</td><td>029</td><td>030</td></tr>
+            <tr><td>031</td><td>032</td><td>033</td><td>034</td><td>035</td></tr>
+            <tr><td>036</td><td>037</td><td>038</td><td>039</td><td>040</td></tr>
+            <tr><td>041</td><td>042</td><td>043</td><td>044</td><td>045</td></tr>
+            <tr><td>046</td><td>047</td><td>048</td><td>049</td><td>050</td></tr>
+            <tr><td>051</td><td>052</td><td>053</td><td>054</td><td>055</td></tr>
+            <tr><td>056</td><td>057</td><td>058</td><td>059</td><td>060</td></tr>
+            <tr><td>061</td><td>062</td><td>063</td><td>064</td><td>065</td></tr>
+            <tr><td>066</td><td>067</td><td>068</td><td>069</td><td>070</td></tr>
+            <tr><td>071</td><td>072</td><td>073</td><td>074</td><td>075</td></tr>
+            <tr><td>076</td><td>077</td><td>078</td><td>079</td><td>080</td></tr>
+            <tr><td>081</td><td>082</td><td>083</td><td>084</td><td>085</td></tr>
+            <tr><td>086</td><td>087</td><td>088</td><td>089</td><td>090</td></tr>
+            <tr><td>091</td><td>092</td><td>093</td><td>094</td><td>095</td></tr>
+            <tr><td>096</td><td>097</td><td>098</td><td>099</td><td>100</td></tr>
+            <tr><td>101</td><td>102</td><td>103</td><td>104</td><td>110</td></tr>
+            <tr><td>106</td><td>107</td><td>108</td><td>109</td><td>110</td></tr>
+            <tr><td>111</td><td>112</td><td>113</td><td>114</td><td>115</td></tr>
+            <tr><td>116</td><td>117</td><td>118</td><td>119</td><td>120</td></tr>
+            <tr><td>121</td><td>122</td><td>123</td><td>124</td><td>125</td></tr>
+            <tr><td>126</td><td>127</td><td>128</td><td>129</td><td>130</td></tr>
+            <tr><td>131</td><td>132</td><td>133</td><td>134</td><td>135</td></tr>
+            <tr><td>136</td><td>137</td><td>138</td><td>139</td><td>140</td></tr>
+            <tr><td>141</td><td>142</td><td>143</td><td>144</td><td>145</td></tr>
+            <tr><td>146</td><td>147</td><td>148</td><td>149</td><td>150</td></tr>
+            <tr><td>151</td><td>152</td><td>153</td><td>154</td><td>155</td></tr>
+            <tr><td>156</td><td>157</td><td>158</td><td>159</td><td>160</td></tr>
+            <tr><td>161</td><td>162</td><td>163</td><td>164</td><td>165</td></tr>
+            <tr><td>166</td><td>167</td><td>168</td><td>169</td><td>170</td></tr>
+            <tr><td>171</td><td>172</td><td>173</td><td>174</td><td>175</td></tr>
+            <tr><td>176</td><td>177</td><td>178</td><td>179</td><td>180</td></tr>
+            <tr><td>181</td><td>182</td><td>183</td><td>184</td><td>185</td></tr>
+            <tr><td>186</td><td>187</td><td>188</td><td>189</td><td>190</td></tr>
+            <tr><td>191</td><td>192</td><td>193</td><td>194</td><td>195</td></tr>
+            <tr><td>196</td><td>197</td><td>198</td><td>199</td><td>200</td></tr>
+            <tr><td>201</td><td>202</td><td>203</td><td>204</td><td>205</td></tr>
+            <tr><td>206</td><td>207</td><td>208</td><td>209</td><td>210</td></tr>
+            <tr><td>211</td><td>212</td><td>213</td><td>214</td><td>215</td></tr>
+            <tr><td>216</td><td>217</td><td>218</td><td>219</td><td>220</td></tr>
+            <tr><td>221</td><td>222</td><td>223</td><td>224</td><td>225</td></tr>
+            <tr><td>226</td><td>227</td><td>228</td><td>229</td><td>230</td></tr>
+            <tr><td>231</td><td>232</td><td>233</td><td>234</td><td>235</td></tr>
+            <tr><td>236</td><td>237</td><td>238</td><td>239</td><td>240</td></tr>
+            <tr><td>241</td><td>242</td><td>243</td><td>244</td><td>245</td></tr>
+            <tr><td>246</td><td>247</td><td>248</td><td>249</td><td>250</td></tr>
+            <tr><td>251</td><td>252</td><td>253</td><td>254</td><td>255</td></tr>
+            <tr><td>256</td><td>257</td><td>258</td><td>259</td><td>260</td></tr>
+            <tr><td>261</td><td>262</td><td>263</td><td>264</td><td>265</td></tr>
+            <tr><td>266</td><td>267</td><td>268</td><td>269</td><td>270</td></tr>
+            <tr><td>271</td><td>272</td><td>273</td><td>274</td><td>275</td></tr>
+            <tr><td>276</td><td>277</td><td>278</td><td>279</td><td>280</td></tr>
+            <tr><td>281</td><td>282</td><td>283</td><td>284</td><td>285</td></tr>
+            <tr><td>286</td><td>287</td><td>288</td><td>289</td><td>290</td></tr>
+            <tr><td>291</td><td>292</td><td>293</td><td>294</td><td>295</td></tr>
+            <tr><td>296</td><td>297</td><td>298</td><td>299</td><td>300</td></tr>
+            <tr><td>301</td><td>302</td><td>303</td><td>304</td><td>305</td></tr>
+            <tr><td>306</td><td>307</td><td>308</td><td>309</td><td>310</td></tr>
+            <tr><td>311</td><td>312</td><td>313</td><td>314</td><td>315</td></tr>
+            <tr><td>316</td><td>317</td><td>318</td><td>319</td><td>320</td></tr>
+            <tr><td>321</td><td>322</td><td>323</td><td>324</td><td>325</td></tr>
+            <tr><td>326</td><td>327</td><td>328</td><td>329</td><td>330</td></tr>
+            <tr><td>331</td><td>332</td><td>333</td><td>334</td><td>335</td></tr>
+            <tr><td>336</td><td>337</td><td>338</td><td>339</td><td>340</td></tr>
+            <tr><td>341</td><td>342</td><td>343</td><td>344</td><td>345</td></tr>
+            <tr><td>346</td><td>347</td><td>348</td><td>349</td><td>350</td></tr>
+            <tr><td>351</td><td>352</td><td>353</td><td>354</td><td>355</td></tr>
+            <tr><td>356</td><td>357</td><td>358</td><td>359</td><td>360</td></tr>
+            <tr><td>361</td><td>362</td><td>363</td><td>364</td><td>365</td></tr>
+            <tr><td>366</td><td>367</td><td>368</td><td>369</td><td>370</td></tr>
+            <tr><td>371</td><td>372</td><td>373</td><td>374</td><td>375</td></tr>
+            <tr><td>376</td><td>377</td><td>378</td><td>379</td><td>380</td></tr>
+            <tr><td>381</td><td>382</td><td>383</td><td>384</td><td>385</td></tr>
+            <tr><td>386</td><td>387</td><td>388</td><td>389</td><td>390</td></tr>
+            <tr><td>391</td><td>392</td><td>393</td><td>394</td><td>395</td></tr>
+            <tr><td>396</td><td>397</td><td>398</td><td>399</td><td>400</td></tr>
+            <tr><td>401</td><td>402</td><td>403</td><td>404</td><td>405</td></tr>
+            <tr><td>406</td><td>407</td><td>408</td><td>409</td><td>410</td></tr>
+            <tr><td>411</td><td>412</td><td>413</td><td>414</td><td>415</td></tr>
+            <tr><td>416</td><td>417</td><td>418</td><td>419</td><td>420</td></tr>
+            <tr><td>421</td><td>422</td><td>423</td><td>424</td><td>425</td></tr>
+            <tr><td>426</td><td>427</td><td>428</td><td>429</td><td>430</td></tr>
+            <tr><td>431</td><td>432</td><td>433</td><td>434</td><td>435</td></tr>
+            <tr><td>436</td><td>437</td><td>438</td><td>439</td><td>440</td></tr>
+            <tr><td>441</td><td>442</td><td>443</td><td>444</td><td>445</td></tr>
+            <tr><td>446</td><td>447</td><td>448</td><td>449</td><td>450</td></tr>
+            <tr><td>451</td><td>452</td><td>453</td><td>454</td><td>455</td></tr>
+            <tr><td>456</td><td>457</td><td>458</td><td>459</td><td>460</td></tr>
+            <tr><td>461</td><td>462</td><td>463</td><td>464</td><td>465</td></tr>
+            <tr><td>466</td><td>467</td><td>468</td><td>469</td><td>470</td></tr>
+            <tr><td>471</td><td>472</td><td>473</td><td>474</td><td>475</td></tr>
+            <tr><td>476</td><td>477</td><td>478</td><td>479</td><td>480</td></tr>
+            <tr><td>481</td><td>482</td><td>483</td><td>484</td><td>485</td></tr>
+            <tr><td>486</td><td>487</td><td>488</td><td>489</td><td>490</td></tr>
+            <tr><td>491</td><td>492</td><td>493</td><td>494</td><td>495</td></tr>
+            <tr><td>496</td><td>497</td><td>498</td><td>499</td><td>500</td></tr>
+            <tr><td>501</td><td>502</td><td>503</td><td>504</td><td>505</td></tr>
+            <tr><td>506</td><td>507</td><td>508</td><td>509</td><td>510</td></tr>
+            <tr><td>511</td><td>512</td><td>513</td><td>514</td><td>515</td></tr>
+            <tr><td>516</td><td>517</td><td>518</td><td>519</td><td>520</td></tr>
+            <tr><td>521</td><td>522</td><td>523</td><td>524</td><td>525</td></tr>
+            <tr><td>526</td><td>527</td><td>528</td><td>529</td><td>530</td></tr>
+            <tr><td>531</td><td>532</td><td>533</td><td>534</td><td>535</td></tr>
+            <tr><td>536</td><td>537</td><td>538</td><td>539</td><td>540</td></tr>
+            <tr><td>541</td><td>542</td><td>543</td><td>544</td><td>545</td></tr>
+            <tr><td>546</td><td>547</td><td>548</td><td>549</td><td>550</td></tr>
+            <tr><td>551</td><td>552</td><td>553</td><td>554</td><td>555</td></tr>
+            <tr><td>556</td><td>557</td><td>558</td><td>559</td><td>560</td></tr>
+            <tr><td>561</td><td>562</td><td>563</td><td>564</td><td>565</td></tr>
+            <tr><td>566</td><td>567</td><td>568</td><td>569</td><td>570</td></tr>
+            <tr><td>571</td><td>572</td><td>573</td><td>574</td><td>575</td></tr>
+            <tr><td>576</td><td>577</td><td>578</td><td>579</td><td>580</td></tr>
+            <tr><td>581</td><td>582</td><td>583</td><td>584</td><td>585</td></tr>
+            <tr><td>586</td><td>587</td><td>588</td><td>589</td><td>590</td></tr>
+            <tr><td>591</td><td>592</td><td>593</td><td>594</td><td>595</td></tr>
+            <tr><td>596</td><td>597</td><td>598</td><td>599</td><td>600</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Cartones Disponibles Bingo 90🎱</h2>
+    <div id="bingo-90-count"></div>
+    <table class="bingo-table" id="bingo-table-90">
+        <thead>
+            <tr>
+                <th>B</th>
+                <th>I</th>
+                <th>N</th>
+                <th>G</th>
+                <th>O</th>
+                <th>!</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>001001</td><td>001002</td><td>001003</td><td>001004</td><td>001005</td><td>001006</td>
+            </tr>
+            <tr>
+                <td>002001</td><td>002002</td><td>002003</td><td>002004</td><td>002005</td><td>002006</td>
+            </tr>
+            <tr>
+                <td>003001</td><td>003002</td><td>003003</td><td>003004</td><td>003005</td><td>003006</td>
+            </tr>
+            <tr>
+                <td>004001</td><td>004002</td><td>004003</td><td>004004</td><td>004005</td><td>004006</td>
+            </tr>
+            <tr>
+                <td>005001</td><td>005002</td><td>005003</td><td>005004</td><td>005005</td><td>005006</td>
+            </tr>
+            <tr>
+                <td>006001</td><td>006002</td><td>006003</td><td>006004</td><td>006005</td><td>006006</td>
+            </tr>
+            <tr>
+                <td>007001</td><td>007002</td><td>007003</td><td>007004</td><td>007005</td><td>007006</td>
+            </tr>
+            <tr>
+                <td>008001</td><td>008002</td><td>008003</td><td>008004</td><td>008005</td><td>008006</td>
+            </tr>
+            <tr>
+                <td>009001</td><td>009002</td><td>009003</td><td>009004</td><td>009005</td><td>009006</td>
+            </tr>
+            <tr>
+                <td>010001</td><td>010002</td><td>010003</td><td>010004</td><td>010005</td><td>010006</td>
+            </tr>
+            <tr>
+                <td>011001</td><td>011002</td><td>011003</td><td>011004</td><td>011005</td><td>011006</td>
+            </tr>
+            <tr>
+                <td>012001</td><td>012002</td><td>012003</td><td>012004</td><td>012005</td><td>012006</td>
+            </tr>
+            <tr>
+                <td>013001</td><td>013002</td><td>013003</td><td>013004</td><td>013005</td><td>013006</td>
+            </tr>
+            <tr>
+                <td>014001</td><td>014002</td><td>014003</td><td>014004</td><td>014005</td><td>014006</td>
+            </tr>
+            <tr>
+                <td>015001</td><td>015002</td><td>015003</td><td>015004</td><td>015005</td><td>015006</td>
+            </tr>
+            <tr>
+                <td>016001</td><td>016002</td><td>016003</td><td>016004</td><td>016005</td><td>016006</td>
+            </tr>
+            <tr>
+                <td>017001</td><td>017002</td><td>017003</td><td>017004</td><td>017005</td><td>017006</td>
+            </tr>
+            <tr>
+                <td>018001</td><td>018002</td><td>018003</td><td>018004</td><td>018005</td><td>018006</td>
+            </tr>
+            <tr>
+                <td>019001</td><td>019002</td><td>019003</td><td>019004</td><td>019005</td><td>019006</td>
+            </tr>
+            <tr>
+                <td>020001</td><td>020002</td><td>020003</td><td>020004</td><td>020005</td><td>020006</td>
+            </tr>
+            <tr>
+                <td>021001</td><td>021002</td><td>021003</td><td>021004</td><td>021005</td><td>021006</td>
+            </tr>
+            <tr>
+                <td>022001</td><td>022002</td><td>022003</td><td>022004</td><td>022005</td><td>022006</td>
+            </tr>
+            <tr>
+                <td>023001</td><td>023002</td><td>023003</td><td>023004</td><td>023005</td><td>023006</td>
+            </tr>
+            <tr>
+                <td>024001</td><td>024002</td><td>024003</td><td>024004</td><td>024005</td><td>024006</td>
+            </tr>
+            <tr>
+                <td>025001</td><td>025002</td><td>025003</td><td>025004</td><td>025005</td><td>025006</td>
+            </tr>
+            <tr>
+                <td>026001</td><td>026002</td><td>026003</td><td>026004</td><td>026005</td><td>026006</td>
+            </tr>
+            <tr>
+                <td>027001</td><td>027002</td><td>027003</td><td>027004</td><td>027005</td><td>027006</td>
+            </tr>
+            <tr>
+                <td>028001</td><td>028002</td><td>028003</td><td>028004</td><td>028005</td><td>028006</td>
+            </tr>
+            <tr>
+                <td>029001</td><td>029002</td><td>029003</td><td>029004</td><td>029005</td><td>029006</td>
+            </tr>
+            <tr>
+                <td>030001</td><td>030002</td><td>030003</td><td>030004</td><td>030005</td><td>030006</td>
+            </tr>
+            <tr>
+                <td>031001</td><td>031002</td><td>031003</td><td>031004</td><td>031005</td><td>031006</td>
+            </tr>
+            <tr>
+                <td>032001</td><td>032002</td><td>032003</td><td>032004</td><td>032005</td><td>032006</td>
+            </tr>
+            <tr>
+                <td>033001</td><td>033002</td><td>033003</td><td>033004</td><td>033005</td><td>033006</td>
+            </tr>
+            <tr>
+                <td>034001</td><td>034002</td><td>034003</td><td>034004</td><td>034005</td><td>034006</td>
+            </tr>
+            <tr>
+                <td>035001</td><td>035002</td><td>035003</td><td>035004</td><td>035005</td><td>035006</td>
+            </tr>
+            <tr>
+                <td>036001</td><td>036002</td><td>036003</td><td>036004</td><td>036005</td><td>036006</td>
+            </tr>
+            <tr>
+                <td>037001</td><td>037002</td><td>037003</td><td>037004</td><td>037005</td><td>037006</td>
+            </tr>
+            <tr>
+                <td>038001</td><td>038002</td><td>038003</td><td>038004</td><td>038005</td><td>038006</td>
+            </tr>
+            <tr>
+                <td>039001</td><td>039002</td><td>039003</td><td>039004</td><td>039005</td><td>039006</td>
+            </tr>
+            <tr>
+                <td>040001</td><td>040002</td><td>040003</td><td>040004</td><td>040005</td><td>040006</td>
+            </tr>
+            <tr>
+                <td>041001</td><td>041002</td><td>041003</td><td>041004</td><td>041005</td><td>041006</td>
+            </tr>
+            <tr>
+                <td>042001</td><td>042002</td><td>042003</td><td>042004</td><td>042005</td><td>042006</td>
+            </tr>
+            <tr>
+                <td>043001</td><td>043002</td><td>043003</td><td>043004</td><td>043005</td><td>043006</td>
+            </tr>
+            <tr>
+                <td>044001</td><td>044002</td><td>044003</td><td>044004</td><td>044005</td><td>044006</td>
+            </tr>
+            <tr>
+                <td>045001</td><td>045002</td><td>045003</td><td>045004</td><td>045005</td><td>045006</td>
+            </tr>
+            <tr>
+                <td>046001</td><td>046002</td><td>046003</td><td>046004</td><td>046005</td><td>046006</td>
+            </tr>
+            <tr>
+                <td>047001</td><td>047002</td><td>047003</td><td>047004</td><td>047005</td><td>047006</td>
+            </tr>
+            <tr>
+                <td>048001</td><td>048002</td><td>048003</td><td>048004</td><td>048005</td><td>048006</td>
+            </tr>
+            <tr>
+                <td>049001</td><td>049002</td><td>049003</td><td>049004</td><td>049005</td><td>049006</td>
+            </tr>
+            <tr>
+                <td>050001</td><td>050002</td><td>050003</td><td>050004</td><td>050005</td><td>050006</td>
+            </tr>
+            <tr>
+                <td>051001</td><td>051002</td><td>051003</td><td>051004</td><td>051005</td><td>051006</td>
+            </tr>
+            <tr>
+                <td>052001</td><td>052002</td><td>052003</td><td>052004</td><td>052005</td><td>052006</td>
+            </tr>
+            <tr>
+                <td>053001</td><td>053002</td><td>053003</td><td>053004</td><td>053005</td><td>053006</td>
+            </tr>
+            <tr>
+                <td>054001</td><td>054002</td><td>054003</td><td>054004</td><td>054005</td><td>054006</td>
+            </tr>
+            <tr>
+                <td>055001</td><td>055002</td><td>055003</td><td>055004</td><td>055005</td><td>055006</td>
+            </tr>
+            <tr>
+                <td>056001</td><td>056002</td><td>056003</td><td>056004</td><td>056005</td><td>056006</td>
+            </tr>
+            <tr>
+                <td>057001</td><td>057002</td><td>057003</td><td>057004</td><td>057005</td><td>057006</td>
+            </tr>
+            <tr>
+                <td>058001</td><td>058002</td><td>058003</td><td>058004</td><td>058005</td><td>058006</td>
+            </tr>
+            <tr>
+                <td>059001</td><td>059002</td><td>059003</td><td>059004</td><td>059005</td><td>059006</td>
+            </tr>
+            <tr>
+                <td>060001</td><td>060002</td><td>060003</td><td>060004</td><td>060005</td><td>060006</td>
+            </tr>
+            <tr>
+                <td>061001</td><td>061002</td><td>061003</td><td>061004</td><td>061005</td><td>061006</td>
+            </tr>
+            <tr>
+                <td>062001</td><td>062002</td><td>062003</td><td>062004</td><td>062005</td><td>062006</td>
+            </tr>
+            <tr>
+                <td>063001</td><td>063002</td><td>063003</td><td>063004</td><td>063005</td><td>063006</td>
+            </tr>
+            <tr>
+                <td>064001</td><td>064002</td><td>064003</td><td>064004</td><td>064005</td><td>064006</td>
+            </tr>
+            <tr>
+                <td>065001</td><td>065002</td><td>065003</td><td>065004</td><td>065005</td><td>065006</td>
+            </tr>
+            <tr>
+                <td>066001</td><td>066002</td><td>066003</td><td>066004</td><td>066005</td><td>066006</td>
+            </tr>
+            <tr>
+                <td>067001</td><td>067002</td><td>067003</td><td>067004</td><td>067005</td><td>067006</td>
+            </tr>
+            <tr>
+                <td>068001</td><td>068002</td><td>068003</td><td>068004</td><td>068005</td><td>068006</td>
+            </tr>
+            <tr>
+                <td>069001</td><td>069002</td><td>069003</td><td>069004</td><td>069005</td><td>069006</td>
+            </tr>
+            <tr>
+                <td>070001</td><td>070002</td><td>070003</td><td>070004</td><td>070005</td><td>070006</td>
+            </tr>
+            <tr>
+                <td>071001</td><td>071002</td><td>071003</td><td>071004</td><td>071005</td><td>071006</td>
+            </tr>
+            <tr>
+                <td>072001</td><td>072002</td><td>072003</td><td>072004</td><td>072005</td><td>072006</td>
+            </tr>
+            <tr>
+                <td>073001</td><td>073002</td><td>073003</td><td>073004</td><td>073005</td><td>073006</td>
+            </tr>
+            <tr>
+                <td>074001</td><td>074002</td><td>074003</td><td>074004</td><td>074005</td><td>074006</td>
+            </tr>
+            <tr>
+                <td>075001</td><td>075002</td><td>075003</td><td>075004</td><td>075005</td><td>075006</td>
+            </tr>
+            <tr>
+                <td>076001</td><td>076002</td><td>076003</td><td>076004</td><td>076005</td><td>076006</td>
+            </tr>
+            <tr>
+                <td>077001</td><td>077002</td><td>077003</td><td>077004</td><td>077005</td><td>077006</td>
+            </tr>
+            <tr>
+                <td>078001</td><td>078002</td><td>078003</td><td>078004</td><td>078005</td><td>078006</td>
+            </tr>
+            <tr>
+                <td>079001</td><td>079002</td><td>079003</td><td>079004</td><td>079005</td><td>079006</td>
+            </tr>
+            <tr>
+                <td>080001</td><td>080002</td><td>080003</td><td>080004</td><td>080005</td><td>080006</td>
+            </tr>
+            <tr>
+                <td>081001</td><td>081002</td><td>081003</td><td>081004</td><td>081005</td><td>081006</td>
+            </tr>
+            <tr>
+                <td>082001</td><td>082002</td><td>082003</td><td>082004</td><td>082005</td><td>082006</td>
+            </tr>
+            <tr>
+                <td>083001</td><td>083002</td><td>083003</td><td>083004</td><td>083005</td><td>083006</td>
+            </tr>
+            <tr>
+                <td>084001</td><td>084002</td><td>084003</td><td>084004</td><td>084005</td><td>084006</td>
+            </tr>
+            <tr>
+                <td>085001</td><td>085002</td><td>085003</td><td>085004</td><td>085005</td><td>085006</td>
+            </tr>
+            <tr>
+                <td>086001</td><td>086002</td><td>086003</td><td>086004</td><td>086005</td><td>086006</td>
+            </tr>
+            <tr>
+                <td>087001</td><td>087002</td><td>087003</td><td>087004</td><td>087005</td><td>087006</td>
+            </tr>
+            <tr>
+                <td>088001</td><td>088002</td><td>088003</td><td>088004</td><td>088005</td><td>088006</td>
+            </tr>
+            <tr>
+                <td>089001</td><td>089002</td><td>089003</td><td>089004</td><td>089005</td><td>089006</td>
+            </tr>
+            <tr>
+                <td>090001</td><td>090002</td><td>090003</td><td>090004</td><td>090005</td><td>090006</td>
+            </tr>
+            <tr>
+                <td>091001</td><td>091002</td><td>091003</td><td>091004</td><td>091005</td><td>091006</td>
+            </tr>
+            <tr>
+                <td>092001</td><td>092002</td><td>092003</td><td>092004</td><td>092005</td><td>092006</td>
+            </tr>
+            <tr>
+                <td>093001</td><td>093002</td><td>093003</td><td>093004</td><td>093005</td><td>093006</td>
+            </tr>
+            <tr>
+                <td>094001</td><td>094002</td><td>094003</td><td>094004</td><td>094005</td><td>094006</td>
+            </tr>
+            <tr>
+                <td>095001</td><td>095002</td><td>095003</td><td>095004</td><td>095005</td><td>095006</td>
+            </tr>
+            <tr>
+                <td>096001</td><td>096002</td><td>096003</td><td>096004</td><td>096005</td><td>096006</td>
+            </tr>
+            <tr>
+                <td>097001</td><td>097002</td><td>097003</td><td>097004</td><td>097005</td><td>097006</td>
+            </tr>
+            <tr>
+                <td>098001</td><td>098002</td><td>098003</td><td>098004</td><td>098005</td><td>098006</td>
+            </tr>
+            <tr>
+                <td>099001</td><td>099002</td><td>099003</td><td>099004</td><td>099005</td><td>099006</td>
+            </tr>
+            <tr>
+                <td>100001</td><td>100002</td><td>100003</td><td>100004</td><td>100005</td><td>100006</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <P>CLAVE DE ACCESO ADMINISTRADOR</P>
+            <div class="input-container">
+                <input type="password" id="passwordInput" />
+                <span class="password-toggle" onclick="togglePasswordVisibility()">
+            </div>
+            <div class="modal-buttons">
+                <button id="acceptButton">Aceptar</button>
+                <button id="cancelButton">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-button" id="resetButton">Restaurar Números Marcados</button>
+    <footer class="footer">
+        <div class="icon-container">
+            <a href="https://www.ordenacionjuego.es/participantes-juego/juego-autorizado" target="_blank">
+                <img src="images/juegoautorizado.png" alt="Juego Autorizado" class="icon">
+            </a>
+        </div>
+        <div class="icon-container">
+            <a href="https://www.ordenacionjuego.es/participantes-juego/juego-seguro" target="_blank">
+                <img src="images/juegoseguro.png" alt="Juego Seguro" class="icon">
+            </a>
+        </div>
+        <div class="icon-container">
+            <a href="https://www.jugadoresanonimos.org/" target="_blank">
+                <img src="images/juegabien.png" alt="Jugadores Anónimos" class="icon">
+            </a>
+        </div>
+        <div class="icon-container">
+            <a href="https://www.ordenacionjuego.es/participantes-juego/juego-seguro/rgiaj" target="_blank">
+                <img src="images/juegogame.png" alt="Autoprohibición al Juego" class="icon">
+            </a>
+        </div>
+        <p>&copy; Empresa Yang Diversión Casino, Extensión Bingo Yang Casino, Todos los derechos reservados.</p>
+        <p>PROHIBIDO MENORES DE 🔞</p>
+    </footer>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9jE8fu9UPZI-7UBx_Gy00cqYgmuY-ASs",
+            authDomain: "bingo-yangg.firebaseapp.com",
+            databaseURL: "https://bingo-yangg-default-rtdb.firebaseio.com",
+            projectId: "bingo-yangg",
+            storageBucket: "bingo-yangg.appspot.com",
+            messagingSenderId: "978098281950",
+            appId: "1:978098281950:web:3ec7eab66e2e486012114f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const cells75 = document.querySelectorAll('#bingo-table-75 td');
+            const cells90 = document.querySelectorAll('#bingo-table-90 td');
+            const modal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const acceptButton = document.getElementById('acceptButton');
+            const cancelButton = document.getElementById('cancelButton');
+            const closeButton = document.querySelector('.close');
+            const resetButton = document.getElementById('resetButton');
+            const correctPassword = '$2109';
+            let selectedCell = null;
+            let resetMode = false;
+
+            // Load marked cells from Firebase and set up real-time listeners
+            const loadMarkedCells = (gameType) => {
+                const cells = gameType === 'bingo-75' ? cells75 : cells90;
+                const markedRef = ref(database, `marked/${gameType}`);
+                onValue(markedRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const markedData = snapshot.val();
+                        cells.forEach(cell => {
+                            const isMarked = markedData[cell.textContent] === true;
+                            if (isMarked) {
+                                cell.classList.add('marked');
+                                cell.style.backgroundColor = 'red';
+                            } else {
+                                cell.classList.remove('marked');
+                                cell.style.backgroundColor = 'rgba(92, 255, 92, 0.487)';
+                            }
+                        });
+                        countBingo75();
+                        countBingo90();
+                    }
+                });
+            };
+
+            loadMarkedCells('bingo-75');
+            loadMarkedCells('bingo-90');
+
+            // Count marked and unmarked cells for Bingo 75
+            const countBingo75 = () => {
+                let markedCount = 0;
+                let unmarkedCount = 0;
+                cells75.forEach(cell => {
+                    if (cell.classList.contains('marked')) {
+                        markedCount++;
+                    } else {
+                        unmarkedCount++;
+                    }
+                });
+                document.getElementById('bingo-75-count').innerText = `Disponibles: ${unmarkedCount}, Vendidos: ${markedCount}`;
+            };
+
+            // Count marked and unmarked cells for Bingo 90
+            const countBingo90 = () => {
+                let markedCount = 0;
+                let unmarkedCount = 0;
+                cells90.forEach(cell => {
+                    if (cell.classList.contains('marked')) {
+                        markedCount++;
+                    } else {
+                        unmarkedCount++;
+                    }
+                });
+                document.getElementById('bingo-90-count').innerText = `Disponibles: ${unmarkedCount}, Vendidos: ${markedCount}`;
+            };
+
+            // Initial count
+            countBingo75();
+            countBingo90();
+
+            cells75.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    selectedCell = cell;
+                    resetMode = false;
+                    modal.style.display = 'block';
+                });
+            });
+
+            cells90.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    selectedCell = cell;
+                    resetMode = false;
+                    modal.style.display = 'block';
+                });
+            });
+
+            resetButton.addEventListener('click', () => {
+                resetMode = true;
+                modal.style.display = 'block';
+            });
+
+            closeButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+                selectedCell = null;
+                resetMode = false;
+            });
+
+            cancelButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+                selectedCell = null;
+                resetMode = false;
+            });
+
+            acceptButton.addEventListener('click', () => {
+                if (passwordInput.value === correctPassword) {
+                    if (resetMode) {
+                        // Reset all marked cells
+                        const resetMarkedCells = (gameType) => {
+                            const cells = gameType === 'bingo-75' ? cells75 : cells90;
+                            const markedRef = ref(database, `marked/${gameType}`);
+                            set(markedRef, {}).then(() => {
+                                cells.forEach(cell => {
+                                    cell.classList.remove('marked');
+                                    cell.style.backgroundColor = 'rgba(92, 255, 92, 0.487)';
+                                });
+                                countBingo75();
+                                countBingo90();
+                            });
+                        };
+                        resetMarkedCells('bingo-75');
+                        resetMarkedCells('bingo-90');
+                    } else if (selectedCell) {
+                        selectedCell.classList.toggle('marked');
+                        const isMarked = selectedCell.classList.contains('marked');
+                        selectedCell.style.backgroundColor = isMarked ? 'red' : 'rgba(92, 255, 92, 0.487)';
+
+                        // Update Firebase
+                        const gameType = selectedCell.closest('#bingo-table-75') ? 'bingo-75' : 'bingo-90';
+                        const markedRef = ref(database, `marked/${gameType}/${selectedCell.textContent}`);
+                        set(markedRef, isMarked);
+                    }
+                    modal.style.display = 'none';
+                    selectedCell = null;
+                    resetMode = false;
+                    passwordInput.value = '';
+                    countBingo75();
+                    countBingo90();
+                } else {
+                    alert('Clave incorrecta. Inténtalo de nuevo.');
+                }
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    selectedCell = null;
+                    resetMode = false;
+                }
+            });
+        });
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+    </script>
+     
+     <script>
+        // Bloquear clic derecho
+        document.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+        });
+      
+        // Detectar teclas comunes para abrir DevTools
+        document.addEventListener('keydown', function (e) {
+          // F12
+          if (e.key === 'F12') {
+            e.preventDefault();
+          }
+          // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+          if ((e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key)) ||
+              (e.ctrlKey && ['U', 'S'].includes(e.key))) {
+            e.preventDefault();
+          }
+        });
+      
+        // Detectar si DevTools está abierto (básico)
+        setInterval(function () {
+          const before = new Date().getTime();
+          debugger;
+          const after = new Date().getTime();
+          if (after - before > 100) {
+            alert('Por favor, no intentes inspeccionar el sitio.');
+            window.location.href = 'about:blank';
+          }
+        }, 2000);
+      </script>
+      
+</body>
+</html>
