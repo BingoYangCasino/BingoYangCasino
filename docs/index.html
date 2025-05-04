@@ -937,36 +937,6 @@ generateBingoBalls(30);
 
         
     </script>
-    <script>
-        // Bloquear clic derecho
-        document.addEventListener('contextmenu', function (e) {
-          e.preventDefault();
-        });
-      
-        // Detectar teclas comunes para abrir DevTools
-        document.addEventListener('keydown', function (e) {
-          // F12
-          if (e.key === 'F12') {
-            e.preventDefault();
-          }
-          // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
-          if ((e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key)) ||
-              (e.ctrlKey && ['U', 'S'].includes(e.key))) {
-            e.preventDefault();
-          }
-        });
-      
-        // Detectar si DevTools está abierto (básico)
-        setInterval(function () {
-          const before = new Date().getTime();
-          debugger;
-          const after = new Date().getTime();
-          if (after - before > 100) {
-            alert('Por favor, no intentes inspeccionar el sitio.');
-            window.location.href = 'about:blank';
-          }
-        }, 2000);
-      </script>
-    
+  
 </body>
 </html>
