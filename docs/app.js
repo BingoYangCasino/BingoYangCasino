@@ -281,19 +281,34 @@ function checkBingo() {
 
 function mostrarCarton() {
     const id = parseInt(document.getElementById('carton-id').value);
+
+    // Asegurarnos de que currentGame esté definido antes de usarlo
+    if (!currentGame || !currentGame.maxNumbers) {
+        // Podríamos mostrar un mensaje de error en la UI si el juego no está iniciado correctamente
+        console.error("El juego actual no está definido correctamente.");
+        const cartonImageContainer = document.getElementById('carton-image-container');
+        cartonImageContainer.innerHTML = 'Por favor, inicie un juego de Bingo (75 o 90) primero.';
+        return; // Salir de la función si no se sabe el tipo de juego
+    }
+
     const paddedId = id.toString().padStart(currentGame.maxNumbers === 75 ? 3 : 6, '0');
-    const rutaImagen = `images/${paddedId}.jpg`;
+
+    // *** CAMBIO AQUÍ: Determinar la extensión correcta basada en el tipo de juego ***
+    const imageExtension = currentGame.maxNumbers === 75 ? '.jpg' : '.JPG'; // Usa .jpg para 75, .JPG para 90
+
+    const rutaImagen = `images/${paddedId}${imageExtension}`; // Usamos la variable con la extensión correcta
+
     const imagen = new Image();
     imagen.src = rutaImagen;
     imagen.alt = `Cartón ${id}`;
     imagen.onload = function() {
         const cartonImageContainer = document.getElementById('carton-image-container');
-        cartonImageContainer.innerHTML = '';
+        cartonImageContainer.innerHTML = ''; // Limpiar contenedor antes de añadir
         cartonImageContainer.appendChild(imagen);
     };
     imagen.onerror = function() {
         const cartonImageContainer = document.getElementById('carton-image-container');
-        cartonImageContainer.innerHTML = 'Error al cargar la imagen.';
+        cartonImageContainer.innerHTML = 'Error al cargar la imagen. Verifique el número de cartón y la conexión.'; // Mensaje más útil
     };
 }
 
@@ -912,6 +927,7 @@ const validCartonNumbersBingo75 = [
     "051", "052", "053", "054", "055", "056", "057", "058", "059", "060",
     "061", "062", "063", "064", "065", "066", "067", "068", "069", "070",
     "071", "072", "073", "074", "075", "076", "077", "078", "079", "080",
+    "076", "077", "078", "079", "080",
     "081", "082", "083", "084", "085", "086", "087", "088", "089", "090",
     "091", "092", "093", "094", "095", "096", "097", "098", "099", "100",
     "101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
@@ -920,6 +936,7 @@ const validCartonNumbersBingo75 = [
     "131", "132", "133", "134", "135", "136", "137", "138", "139", "140",
     "141", "142", "143", "144", "145", "146", "147", "148", "149", "150",
     "151", "152", "153", "154", "155", "156", "157", "158", "159", "160",
+    "161", "162", "163", "164", "165", "166", "167", "168", "169", "170",
     "161", "162", "163", "164", "165", "166", "167", "168", "169", "170",
     "171", "172", "173", "174", "175", "176", "177", "178", "179", "180",
     "181", "182", "183", "184", "185", "186", "187", "188", "189", "190",
@@ -931,6 +948,7 @@ const validCartonNumbersBingo75 = [
     "241", "242", "243", "244", "245", "246", "247", "248", "249", "250",
     "251", "252", "253", "254", "255", "256", "257", "258", "259", "260",
     "261", "262", "263", "264", "265", "266", "267", "268", "269", "270",
+    "261", "262", "263", "264", "265", "266", "267", "268", "269", "270",
     "271", "272", "273", "274", "275", "276", "277", "278", "279", "280",
     "281", "282", "283", "284", "285", "286", "287", "288", "289", "290",
     "291", "292", "293", "294", "295", "296", "297", "298", "299", "300",
@@ -940,6 +958,7 @@ const validCartonNumbersBingo75 = [
     "331", "332", "333", "334", "335", "336", "337", "338", "339", "340",
     "341", "342", "343", "344", "345", "346", "347", "348", "349", "350",
     "351", "352", "353", "354", "355", "356", "357", "358", "359", "360",
+    "361", "362", "363", "364", "365", "366", "367", "368", "369", "370",
     "361", "362", "363", "364", "365", "366", "367", "368", "369", "370",
     "371", "372", "373", "374", "375", "376", "377", "378", "379", "380",
     "381", "382", "383", "384", "385", "386", "387", "388", "389", "390",

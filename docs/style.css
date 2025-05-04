@@ -18,7 +18,7 @@ body {
     position: relative;
     width: 100%;
     height: 60px; /* Aumentado la altura para que sea más ancha */
-    background-color: #800080af; /* Fondo morado */
+    background-color: #a705a7af; /* Fondo morado */
     overflow: hidden;
     display: flex;
     align-items: center;
