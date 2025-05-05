@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preguntas Bingo Yang</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #1b1b1b;
+      background-image: radial-gradient(black 1px, transparent 1px);
+      background-size: 4px 4px;
+      margin: 0;
+      padding: 0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .logo-space {
+      padding-top: 50px;
+      padding-bottom: 10px;
+    }
+
+    .logo-space img {
+      max-width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: #ffffff;
+      font-size: 50px;
+      margin: 10px 0 30px;
+    }
+    h1 {
+      color: #f080ff;
+      font-size: 50px;
+      margin: 10px 0 30px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: #2c2c2c;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .qa {
+      margin-bottom: 25px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 15px;
+      text-align: left;
+    }
+
+    .question {
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 15px 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: color 0.3s;
+    }
+
+    .question:hover {
+      color: #ffd2ff;
+    }
+
+    .arrow {
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+
+    .arrow.open {
+      transform: rotate(180deg);
+    }
+
+    .answer {
+      display: none;
+      margin-top: 10px;
+      color: #e0e0e0;
+      line-height: 1.7;
+      font-size: 0.9em; /* Tamaño de fuente más pequeño para las respuestas */
+    }
+
+    a {
+      color: #66d9ef;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    ul, ol {
+      padding-left: 20px;
+    }
+
+    ul li, ol li {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .question {
+        font-size: 1.1em;
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="logo-space">
+    <!-- Puedes poner tu logo aquí -->
+    <img src="images/logo.png" alt="Logo Bingo Yang" />
+  </div>
+  <div class="container">
+    <h1>🎱Bingo Yang Casino🎱 </h1>
+    <h2>Preguntas Frecuentes</h2>
+    
+    
+    <!-- 1 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Quiénes somos Bingo Yang Casino?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Somos un grupo dedicado a ofrecer experiencias de bingo online con total transparencia, orden y entretenimiento. Nuestro sistema funciona 100% a través de Telegram, donde realizamos todos los juegos, con cartones validados y reglas claras. Nuestro objetivo es brindar diversión segura a través de un sistema accesible, práctico y confiable.</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Qué es el canal de WhatsApp?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>El canal de WhatsApp es donde publicamos todos los anuncios y actualizaciones importantes. Aunque los juegos se realizan exclusivamente por Telegram, es <strong>crucial</strong> que también formes parte del canal de WhatsApp. Allí informamos qué cartones están disponibles, fechas de juegos, números ganadores y noticias importantes.</p>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Cómo participar?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Para participar, debes contactar a uno de nuestros vendedores autorizados. En nuestro canal de WhatsApp encontrarás los números de contacto de los vendedores registrados. Una vez que verifiques tu pago con uno de ellos, podrás ingresar a <a href="https://ambarcha.github.io/BingoYangCasino/usuarios.html" target="_blank">Usuarios Resgistrados</a> e introducir tus datos (usuario y cédula) para ver tus cartones comprados y participar en el sorteo correspondiente.</p>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Quiénes son los vendedores autorizados?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Los vendedores autorizados son personas que ingresan a nuestro sistema de formularios y se encargan de registrar a los usuarios interesados. Son aproximadamente 6 vendedores elegidos al azar que tienen como meta vender 100 cartones cada uno.</p>
+        <p>Ellos se encargan de hacer el tráfico de personas, recolectar y registrar los datos necesarios, que incluyen:</p>
+        <ul>
+          <li>Nombre</li>
+          <li>Cédula de identidad</li>
+          <li>Número de teléfono</li>
+          <li>Número de referencia del pago</li>
+          <li>Captura de pantalla del pago (obligatorio)</li>
+          <li>Cantidad de cartón o cartones deseados</li>
+        </ul>
+        <p>Los datos son ingresados en el sistema y solo el equipo administradores de Bingo Yang Casino pueden validar el pago para que el cartón aparezca en <a href="https://ambarcha.github.io/BingoYangCasino/usuarios.html" target="_blank">Usuarios Resgistrados</a>.</p>
+        <p>La verificación tarda alrededor de 15 minutos. Nuestro sistema es seguro, los datos son temporales y se eliminan después de cada partida. Si deseas volver a jugar, debes proporcionar los datos nuevamente.</p>
+        <p>Los vendedores no son fijos, trabajan por partida. Sus pagos varían entre 30$ y 60$, dependiendo de cuántos cartones vendan. No es un pago fijo ni igual para todos.</p>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Por qué piden cédula de identidad?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Solicitamos la cédula de identidad para contar con un respaldo legal y verificar la identidad de los jugadores. Esto asegura que el sistema sea utilizado de forma legítima y segura. Además, <strong>solo pueden participar personas mayores de edad, sin excepciones</strong>, de acuerdo a lo establecido en las normativas de juegos de azar en línea vigentes en Venezuela.</p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Cómo funciona por Telegram?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Los usuarios deben ingresar al grupo de Telegram mediante el siguiente enlace: <a href="https://t.me/+wveNKH3Isss4MzBh" target="_blank">https://t.me/+wveNKH3Isss4MzBh</a>. Este grupo funciona como los de WhatsApp. Dentro verás a los administradores oficiales identificados como <strong>ADMI OFICIAL 1</strong> y <strong>ADMI OFICIAL 2</strong>. Cualquier duda, reclamo o mensaje importante debe hacerse exclusivamente con ellos.</p>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Cuáles son las reglas para jugar con Bingo Yang en Telegram?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <ol>
+          <li><strong>Buscar tus cartones</strong> en: <a href="https://ambarcha.github.io/BingoYangCasino/usuarios.html" target="_blank">Usuario Registrados</a>. No se envían por PDF de los cartones. Solo verás tu cartón o cartones si estás verificado y pagaste correctamente.</li>
+          <li><strong>El grupo se activa</strong> cuando faltan pocas bolas, para permitir escribir BINGO.</li>
+          <li><strong>El primer bingo válido</strong> se verifica y se publica la captura del pago al ganador como respaldo en el grupo <a href="https://t.me/+wveNKH3Isss4MzBh" target="_blank">https://t.me/+wveNKH3Isss4MzBh</a>.</li>
+          <li><strong>No se permiten insultos</strong>, groserías ni faltas de respeto. Serás expulsado si incumples.</li>
+          <li><strong>Los premios no se dividen</strong>. Solo una persona gana. No hay empates ni reparto de premios.</li>
+          <li><strong>Tener buena conexión</strong> es responsabilidad del jugador. No se repiten jugadas.</li>
+          <li><strong>Respetar horarios</strong>. Los juegos inician puntual. Llegar tarde significa quedar fuera.</li>
+          <li><strong>Solo administradores oficiales</strong> pueden dar información válida. No confíes en terceros.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Cómo son los juegos?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Los administradores anunciarán las fechas de cada juego a través del canal de WhatsApp. Los juegos pueden ser de tipo <strong>Bingo 75</strong> o <strong>Bingo 90</strong>. El día del juego, ya debes estar dentro del grupo de Telegram. Se anunciará el inicio, y deberás tener tus cartones dibujados en una hoja.</p>
+        <p>Las bolitas se anunciarán por Telegram en tiempo real. Al final, se abrirá el grupo para que los jugadores escriban <strong>BINGO</strong>. Se aceptará solo el primer bingo correctamente cantado. No se reparten premios si dos personas lo dicen al mismo tiempo. Estas reglas están basadas en el funcionamiento real de un bingo tradicional.</p>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Sómos confiables?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Sí, somos un equipo comprometido con la legalidad, transparencia y responsabilidad. Operamos al margen de la ley y nos basamos en las directrices establecidas por organismos como la <a href="https://www.ordenacionjuego.es/participantes-juego/juego-autorizado" target="_blank">Dirección General de Ordenación del Juego</a>. Nos esforzamos por crear un entorno justo, seguro y confiable para todos los jugadores.</p>
+        <p>Además, todos nuestros sorteos están claramente documentados, y los premios se entregan con puntualidad y verificación. Puedes jugar con total confianza.</p>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Contamos con RIF?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>Sí, trabajamos bajo el RIF <strong>J-30695696-0</strong>, perteneciente a <strong> Srl D.O.C.A.E</strong>. Esto significa que somos una extensión registrada y cumplimos con las normativas fiscales y legales en Venezuela.</p>
+        <p>El <strong>RIF (Registro de Información Fiscal)</strong> es un requisito obligatorio para todas las actividades comerciales. Estar registrados demuestra nuestro compromiso con la legalidad, la confianza y el buen funcionamiento del sistema.</p>
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="qa">
+      <div class="question" onclick="toggleAnswer(this)">
+        ¿Quiéres ser vendedor?
+        <span class="arrow">▼</span>
+      </div>
+      <div class="answer">
+        <p>El único requisito es tener Telegram y contactar por ese medio a <strong>ADMI OFICIAL 1</strong> o <strong>ADMI OFICIAL 2</strong>. Debes enviar:</p>
+        <ul>
+          <li>Nombre y apellido</li>
+          <li>Cédula de identidad</li>
+          <li>Número de teléfono</li>
+        </ul>
+        <p>Podrás vender hasta 100 cartones. No es obligatorio vender todos, pero si vendes menos, tu ganancia disminuye. Tu misión es conseguir participantes para el juego en la fecha establecida por los administradores.</p>
+        <p>Los vendedores se añaden a un grupo exclusivo de Telegram con contacto directo con el equipo de Bingo Yang Casino para resolver dudas y recibir orientación.</p>
+        <p>Recuerda: solo puedes ser vendedor <strong>una vez</strong> y debes registrar a los usuarios correctamente para que entren al sistema. ¡Sé parte del equipo y gana mientras juegas!</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleAnswer(element) {
+      const answer = element.nextElementSibling;
+      const arrow = element.querySelector('.arrow');
+      if (answer && arrow) {
+        const isOpen = answer.style.display === "block";
+        answer.style.display = isOpen ? "none" : "block";
+        if (isOpen) {
+          arrow.classList.remove("open");
+        } else {
+          arrow.classList.add("open");
+        }
+      }
+    }
+  </script>
+</body>
+</html>
