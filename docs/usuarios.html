@@ -189,22 +189,6 @@
                 flex: 1 1 100%;
             }
         }
-        .faq-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1000;
-        }
-        .faq-button:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
@@ -290,7 +274,6 @@
         <p>&copy; Empresa Yang Diversión Casino, Extensión Bingo Yang Casino, Todos los derechos reservados.</p>
         <p>PROHIBIDO MENORES DE 🔞</p>
     </footer>
-    <button class="faq-button" onclick="window.location.href='preguntas.html'">Preguntas Frecuentes</button>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyA9jE8fu9UPZI-7UBx_Gy00cqYgmuY-ASs",
@@ -349,13 +332,13 @@
                 });
         }
     </script>
-
+  
   <script>
     // Bloquear clic derecho
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
     });
-
+  
     // Detectar teclas comunes para abrir DevTools
     document.addEventListener('keydown', function (e) {
       // F12
@@ -368,7 +351,7 @@
         e.preventDefault();
       }
     });
-
+  
     // Detectar si DevTools está abierto (básico)
     setInterval(function () {
       const before = new Date().getTime();
@@ -380,6 +363,6 @@
       }
     }, 2000);
   </script>
-
+  
 </body>
 </html>
